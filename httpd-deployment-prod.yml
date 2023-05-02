@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: httpd-deployment-prod
+  name: front-deployment
   namespace: msh-dev
 spec:
   selector:
     matchLabels:
-      type: web
+      type: front
   replicas: 1
   template:
     metadata:
       labels:
-        type: web
+        type: front
     spec:
       containers:
       - name: container

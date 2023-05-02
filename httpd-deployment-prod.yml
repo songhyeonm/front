@@ -12,9 +12,9 @@ spec:
     metadata:
       labels:
         type: web
-  spec:
-    containers:
-    - name: container
-      image: songhyeon/front:latest
-      ports:
-      - containerPort: 80
+    spec:
+      containers:
+      - name: container
+        image: songhyeon/front:latest
+        ports:
+        - containerPort: 80

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: httpd-deployment-prod
- namespace: prod
+  name: httpd-deployment-prod
+  namespace: prod
 spec:
- selector:
-   matchLabels:
-    type: web
- replicas: 2
- template:
-   metadata:
-     labels:
-       type: web
-   spec:
+  selector:
+    matchLabels:
+      type: web
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        type: web
+  spec:
     containers:
     - name: container
       image: songhyeon/front:latest

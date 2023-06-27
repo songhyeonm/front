@@ -1,0 +1,96 @@
+---
+- hosts: ["master"]
+  connection: local
+  become: true
+  tasks:
+    - name: Install Java
+      apt:
+        name: openjdk-11-jdk
+        state: present
+        update_cache: yes
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Add Jenkins APT key
+      become: true
+      shell: "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -"
+
+    - name: Add Jenkins APT repository
+      shell: echo deb http://pkg.jenkins.io/debian-stable  binary/ > /etc/apt/sources.list.d/jenkins.list
+      args:
+        executable: /bin/bash
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        state: latest
+
+    - name: Install Jenkins package
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Install unzip package
+      apt:
+        name: unzip
+        state: present
+
+    - name: Download AWS CLI installer
+      get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+        dest: "/tmp/awscliv2.zip"
+
+    - name: Create directory /tmp/awscli
+      file:
+        path: "/tmp/awscli"
+        state: directory
+
+    - name: Unzip AWS CLI installer
+      unarchive:
+        src: "/tmp/awscliv2.zip"
+        dest: "/tmp/awscli"
+
+    - name: Run AWS CLI installer
+      command: /tmp/awscli/aws/install --update
+
+    - name: Add Helm APT key
+      apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
+
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Add Helm APT repository
+      lineinfile:
+        dest: /etc/apt/sources.list.d/helm-stable-debian.list
+        line: "deb https://baltocdn.com/helm/stable/debian/ all main"
+        create: yes
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Helm
+      apt:
+        name: helm
+        state: present
+
+    - name: Download kubectl binary
+      command: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.27.0/bin/linux/amd64/kubectl
+
+    - name: Set execute permissions for kubectl
+      command: chmod +x ./kubectl
+
+    - name: Move kubectl to /usr/local/bin
+      command: mv ./kubectl /usr/local/bin/kubectl
